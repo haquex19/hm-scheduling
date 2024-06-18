@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hm.Scheduling.Api", "Hm.Scheduling.Api\Hm.Scheduling.Api.csproj", "{220A824C-8558-4FBC-9904-A08CCF5F4D31}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hm.Scheduling.Core", "Hm.Scheduling.Core\Hm.Scheduling.Core.csproj", "{A5EA8C6F-8CE5-4410-87C2-17F9E48FA0C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hm.Scheduling.Infrastructure", "Hm.Scheduling.Infrastructure\Hm.Scheduling.Infrastructure.csproj", "{B416BB56-94FC-4839-A5A5-C77DC1BE983B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{220A824C-8558-4FBC-9904-A08CCF5F4D31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{220A824C-8558-4FBC-9904-A08CCF5F4D31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{220A824C-8558-4FBC-9904-A08CCF5F4D31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5EA8C6F-8CE5-4410-87C2-17F9E48FA0C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5EA8C6F-8CE5-4410-87C2-17F9E48FA0C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5EA8C6F-8CE5-4410-87C2-17F9E48FA0C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5EA8C6F-8CE5-4410-87C2-17F9E48FA0C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B416BB56-94FC-4839-A5A5-C77DC1BE983B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B416BB56-94FC-4839-A5A5-C77DC1BE983B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B416BB56-94FC-4839-A5A5-C77DC1BE983B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B416BB56-94FC-4839-A5A5-C77DC1BE983B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
