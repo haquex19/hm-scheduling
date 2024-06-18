@@ -5,6 +5,7 @@ using Hm.Scheduling.Core.Entities;
 using Hm.Scheduling.Core.Exceptions;
 using Hm.Scheduling.Core.Extensions;
 using Hm.Scheduling.Core.Models;
+using Hm.Scheduling.Core.Services;
 using Hm.Scheduling.Core.Stores;
 using MediatR;
 
@@ -21,7 +22,7 @@ public class CreateReservationRequest : IRequest<ReservationModel>
 
 public class CreateReservationRequestValidator : AbstractValidator<CreateReservationRequest>
 {
-    public CreateReservationRequestValidator()
+    public CreateReservationRequestValidator(IHmClock hmClock)
     {
         RuleFor(x => x.Id)
             .NotEmpty();
@@ -31,6 +32,11 @@ public class CreateReservationRequestValidator : AbstractValidator<CreateReserva
 
         RuleFor(x => x.Time)
             .MultipleOf15Minutes();
+
+        RuleFor(x => x.Time)
+            .Must(x => hmClock.UtcNowOffset() < x.AddHours(-24))
+            .WithErrorCode("MustRequestWithin24Hours")
+            .WithMessage("A reservation request must be made within 24 hours.");
     }
 }
 
@@ -45,7 +51,7 @@ public class CreateReservationRequestHandler(
 
     public async Task<ReservationModel> Handle(CreateReservationRequest request, CancellationToken cancellationToken)
     {
-        if (await appointmentAvailabilityStore.ExistsByIdAsync(request.Id))
+        if (!await appointmentAvailabilityStore.ExistsByIdAsync(request.Id))
         {
             throw new RequestException(HttpStatusCode.NotFound);
         }

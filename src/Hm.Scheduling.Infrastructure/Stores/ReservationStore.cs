@@ -16,6 +16,7 @@ public class ReservationStore(HmDbContext context) : BaseStore<Reservation>(cont
     {
         return await Table.AnyAsync(
             x => x.AppointmentAvailabilityId == availabilityId &&
+                 x.StartTime == startTime &&
                  (x.ConfirmedOn != null || DateTimeOffset.UtcNow <= x.ExpiresOn));
     }
 }

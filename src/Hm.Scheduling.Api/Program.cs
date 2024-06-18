@@ -1,6 +1,8 @@
 using Hm.Scheduling.Core.Extensions;
 using Hm.Scheduling.Core.Settings;
+using Hm.Scheduling.Infrastructure.Database;
 using Hm.Scheduling.Infrastructure.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,13 @@ builder
     .AddCore();
 
 var app = builder.Build();
+
+if (applicationSettings.FirstTimeDbSetup)
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<HmDbContext>();
+    dbContext.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

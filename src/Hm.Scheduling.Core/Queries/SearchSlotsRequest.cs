@@ -2,6 +2,7 @@
 using FluentValidation;
 using Hm.Scheduling.Core.Extensions;
 using Hm.Scheduling.Core.Models;
+using Hm.Scheduling.Core.Services;
 using Hm.Scheduling.Core.Stores;
 using MediatR;
 
@@ -25,8 +26,10 @@ public class SearchSlotsRequestValidator : AbstractValidator<SearchSlotsRequest>
     }
 }
 
-public class SearchSlotsRequestHandler(IMapper mapper, IAppointmentAvailabilityStore appointmentAvailabilityStore)
-    : IRequestHandler<SearchSlotsRequest, List<SlotModel>>
+public class SearchSlotsRequestHandler(
+    IMapper mapper,
+    IHmClock hmClock,
+    IAppointmentAvailabilityStore appointmentAvailabilityStore) : IRequestHandler<SearchSlotsRequest, List<SlotModel>>
 {
     public async Task<List<SlotModel>> Handle(SearchSlotsRequest request, CancellationToken cancellationToken)
     {
@@ -49,8 +52,15 @@ public class SearchSlotsRequestHandler(IMapper mapper, IAppointmentAvailabilityS
             var reservationIndex = 0;
             var startTime = availability.StartTime;
 
-            while (startTime <= availability.EndTime)
+            while (startTime < availability.EndTime)
             {
+                if (hmClock.UtcNowOffset() > startTime)
+                {
+                    // We shouldn't show any time slots for time that has already passed.
+                    startTime = startTime.AddMinutes(15);
+                    continue;
+                }
+
                 var endTime = startTime.AddMinutes(15);
                 var potentialSlotModel = new SlotModel
                 {
@@ -60,7 +70,7 @@ public class SearchSlotsRequestHandler(IMapper mapper, IAppointmentAvailabilityS
                     Provider = providerModel
                 };
 
-                if (availability.Reservations.Count == 0)
+                if (availability.Reservations.Count == 0 || reservationIndex == availability.Reservations.Count)
                 {
                     slots.Add(potentialSlotModel);
                     startTime = endTime;

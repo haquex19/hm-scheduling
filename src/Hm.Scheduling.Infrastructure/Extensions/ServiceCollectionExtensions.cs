@@ -14,7 +14,7 @@ public static class ServiceCollectionExtensions
     {
         services
             .AddSingleton(Options.Create(settings))
-            .AddDbContext<HmDbContext>(options => options.UseSqlite(settings.ConnectionString))
+            .AddDbContext<HmDbContext>(options => options.UseNpgsql(settings.ConnectionString))
             .AddScoped<IAppointmentAvailabilityStore, AppointmentAvailabilityStore>()
             .AddScoped<IReservationStore, ReservationStore>()
             .AddScoped<IUserStore, UserStore>();
