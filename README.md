@@ -2,6 +2,8 @@
 - Running on .NET 8.
 - Using nullable reference types.
 - Using newer C# features such as primary constructors and records.
+- The `Core` library in the project contains domain level objects and functionality. The `Infrastructure` project contains
+code primarily for external services such as postgresql.
 
 # External Service Dependencies
 - The project relies on a postgresql server.
@@ -29,6 +31,8 @@ This ensures that all services, from the controller request down to the database
 # Impactful Assumptions Made
 - Appointments are always in 15 minute intervals. A slot is only available for a multiple of 15. Thus a user will not see
 nor cannot reserve a time such as 2:38 PM for example.
+- Since it's a code challenge, proper authentication/authorization has not been implemented. Refer to the document further
+down to see how I'd do it differently in a real-world scenario.
 
 # Race Condition Handling
 - Race conditions were not handled in this code challenge. The code challenge does do a pre-read request to ensure reservations
@@ -47,12 +51,26 @@ both users without either having written an entry to the database.
 - There are some hard-coded values like an appointment slot length (15 minutes) and the number of hours the user must reserve
 ahead of time by. These should instead be stored as configuration/environment variables. This allows us to change these
 values without a rebuild of the application.
+- I would have implemented a paging mechanism for listing slots. Right now all available slots are returned, this could
+post a problem for providers that have scheduled availability for the year.
+- In the exception handler, if there is an unexpected exception, I am returning a vague description indicating that an error
+has occurred. In a real-world scenario, I would have built an exception tracking pipeline. For example, set up sentry and
+configure sentry to send alerts to a slack channel (or email or some other medium) that can be monitored. Additionally, 
+configure sentry to create jira tickets (or github issues) automatically for high frequence errors that need to be triaged.
 
 # Authentication/Authorization
-The `develop` branch does not have any authentication/authorization programmed into it. Please branch over to the `develop-oauth`
-branch to get an example of how this might work with authentication/authorization.
+The `develop` branch does not have any authentication/authorization programmed into it. Unfortunately, I have ran out of
+time (almost 3 hours in) and could not add that in.
 
-- The `develop-oauth` branch uses [identity server](https://duendesoftware.com/products/identityserver) as the identity
-provider.
-- This branch also demonstrates how this code challenge that doesn't have authentication/authorization can be refactored
-to have it.
+However, to add authentication/authorization I would do the following:
+
+- Select an oauth provider. EG: Microsoft Azure, Duende Identity Server, Okta, Auth0, etc.
+- Configure the identity provider to use an authorization-code flow to log the user in. This will allow a frontend application
+to obtain an access token.
+  - Create an API resource that declares a scope.
+  - Create a client resource (represents the frontend application such as a mobile app). The client resource will not have
+  a secret if it is a public client (such as a mobile app or web app).
+  - Allow the client resource access to the api scope. This will allow the client resource access to the API.
+- The access token will contain a role indicating whether the user is a provider or a client.
+- We can use ASP.NET Identity policies to ensure provider endpoints (such as creating provider available times) are only
+available to providers.
